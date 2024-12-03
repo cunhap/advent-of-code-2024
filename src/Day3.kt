@@ -21,15 +21,25 @@ fun main() {
 
     fun part2(input: List<String>): Long {
         var enabled = true
-        val regex = Regex("mul\\((\\d+),(\\d+)\\)|do\\(\\)|don't\\(\\)")
-        return regex.findAll(input.toString()).map { match ->
-            if (match.groups[0]!!.value == "do()") enabled = true
-            else if (match.groups[0]!!.value == "don't()") enabled = false
-            else if (enabled) return@map match.groups[1]!!.value.toLong() * match.groups[2]!!.value.toLong()
-            0
-        }.sum()
+        val regex = Regex("do\\(\\)|don't\\(\\)|mul\\((\\d+),(\\d+)\\)")
+        return regex.findAll(input.toString()).fold(0) { acc, matchResult ->
+            val operation = matchResult.groups[0]!!.value
+            when (operation) {
+                "do()" -> enabled = true
+                "don't()" -> enabled = false
+                else -> if (enabled) {
+                    val value1 = matchResult.groups[1]?.value?.toLong()
+                    val value2 = matchResult.groups[2]?.value?.toLong()
+                    if (value1 != null && value2 != null) {
+                        return@fold acc + (value1 * value2)
+                    }
+                }
+            }
+            acc
+        }
     }
 
+    670 + 3350 + 2680
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day${day}_test")
     part1(testInput).also { println("Part 1 Test = $it") }
