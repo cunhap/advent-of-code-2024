@@ -22,17 +22,35 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
  */
 fun Any?.println() = println(this)
 
-data class Coordinate(val row: Int, val column: Int)
+// Data classes and enums
+data class Coordinate(val row: Int, val column: Int) {
+    operator fun plus(other: Coordinate) = Coordinate(row + other.row, column + other.column)
+    operator fun minus(other: Coordinate) = Coordinate(row - other.row, column - other.column)
+}
+
+enum class Direction {
+    UP, DOWN, LEFT, RIGHT,
+    DIAGONAL_UP_LEFT, DIAGONAL_UP_RIGHT,
+    DIAGONAL_DOWN_LEFT, DIAGONAL_DOWN_RIGHT, NONE
+}
+
+val DIRECTION_VECTORS = mapOf(
+    Direction.UP to Coordinate(-1, 0),
+    Direction.DOWN to Coordinate(1, 0),
+    Direction.LEFT to Coordinate(0, -1),
+    Direction.RIGHT to Coordinate(0, 1),
+    Direction.DIAGONAL_UP_LEFT to Coordinate(-1, -1),
+    Direction.DIAGONAL_UP_RIGHT to Coordinate(-1, 1),
+    Direction.DIAGONAL_DOWN_LEFT to Coordinate(1, -1),
+    Direction.DIAGONAL_DOWN_RIGHT to Coordinate(1, 1),
+    Direction.NONE to Coordinate(0, 0)
+)
 
 interface MapElement {
     val coordinate: Coordinate
 }
 
 typealias PuzzleMap = Map<Coordinate, MapElement>
-
-enum class Direction {
-    UP, DOWN, LEFT, RIGHT, NONE
-}
 
 fun shortestPath(element1: MapElement, element2: MapElement): List<Coordinate> {
     val directionVector = Coordinate(
@@ -102,4 +120,8 @@ fun rotateMap(inputMap: List<String>): List<String> {
         inputMap.map { it[i] }.joinToString("")
     }
     return columns
+}
+
+fun List<List<Char>>.outOfBounds(coordinate: Coordinate): Boolean {
+    return coordinate.row < 0 || coordinate.row >= this.size || coordinate.column < 0 || coordinate.column >= this[0].size
 }
