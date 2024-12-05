@@ -23,6 +23,24 @@ fun main() {
         return false
     }
 
+    fun searchCrossMas(
+        char: Char,
+        startingCoordinate: Coordinate,
+        searchCoordinate: Coordinate,
+        input: List<List<Char>>
+    ): Boolean {
+        val previousCoordinate = startingCoordinate - searchCoordinate
+        val nextCoordinate = startingCoordinate + searchCoordinate
+
+        if (input.outOfBounds(nextCoordinate)) return false
+        if (input.outOfBounds(previousCoordinate)) return false
+
+        val nextChar = input[nextCoordinate.row][nextCoordinate.column]
+        val previousChar = input[previousCoordinate.row][previousCoordinate.column]
+
+        return char == 'A' && (previousChar == 'M' && nextChar == 'S' || previousChar == 'S' && nextChar == 'M')
+    }
+
     fun part1(input: List<String>): Int {
         val map = input.map { it.toCharArray().toList() }
         val searchCoordinates = DIRECTION_VECTORS.values
@@ -39,31 +57,6 @@ fun main() {
             }
         }
         return numberOfXmas
-    }
-
-    fun searchCrossMas(
-        char: Char,
-        startingCoordinate: Coordinate,
-        searchCoordinate: Coordinate,
-        input: List<List<Char>>
-    ): Boolean {
-        val previousCoordinate = startingCoordinate - searchCoordinate
-        val nextCoordinate = startingCoordinate + searchCoordinate
-
-        if (input.outOfBounds(nextCoordinate)) return false
-        if (input.outOfBounds(previousCoordinate)) return false
-
-        val nextChar = input[nextCoordinate.row][nextCoordinate.column]
-        val previousChar = input[previousCoordinate.row][previousCoordinate.column]
-        when (char) {
-            'A' -> {
-                if (previousChar == 'M' && nextChar == 'S') return true
-                if (previousChar == 'S' && nextChar == 'M') return true
-            }
-
-            else -> return false
-        }
-        return false
     }
 
     fun part2(input: List<String>): Int {
@@ -101,4 +94,16 @@ fun main() {
         println("Result Part 2: ${part2(input)}")
     }.also { println("Time Part 2: $it") }
 }
+
+
+fun List<List<Char>>.countPattern(
+    targetChar: Char,
+    searchFn: (Char, Coordinate) -> Int
+): Int = flatMapIndexed { rowIndex, line ->
+    line.mapIndexedNotNull { columnIndex, char ->
+        if (char == targetChar) {
+            searchFn(char, Coordinate(rowIndex, columnIndex))
+        } else null
+    }
+}.sum()
 
