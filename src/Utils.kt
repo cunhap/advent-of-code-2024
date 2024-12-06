@@ -31,7 +31,49 @@ data class Coordinate(val row: Int, val column: Int) {
 enum class Direction {
     UP, DOWN, LEFT, RIGHT,
     DIAGONAL_UP_LEFT, DIAGONAL_UP_RIGHT,
-    DIAGONAL_DOWN_LEFT, DIAGONAL_DOWN_RIGHT, NONE
+    DIAGONAL_DOWN_LEFT, DIAGONAL_DOWN_RIGHT, NONE;
+
+    fun turnRight(): Direction {
+        return when(this) {
+            UP -> RIGHT
+            RIGHT -> DOWN
+            DOWN -> LEFT
+            LEFT -> UP
+            DIAGONAL_UP_LEFT -> DIAGONAL_UP_RIGHT
+            DIAGONAL_UP_RIGHT -> DIAGONAL_DOWN_RIGHT
+            DIAGONAL_DOWN_RIGHT -> DIAGONAL_DOWN_LEFT
+            DIAGONAL_DOWN_LEFT -> DIAGONAL_UP_LEFT
+            else -> NONE
+        }
+    }
+
+    fun turnLeft(): Direction {
+        return when(this) {
+            UP -> LEFT
+            LEFT -> DOWN
+            DOWN -> RIGHT
+            RIGHT -> UP
+            DIAGONAL_UP_LEFT -> DIAGONAL_DOWN_LEFT
+            DIAGONAL_DOWN_LEFT -> DIAGONAL_DOWN_RIGHT
+            DIAGONAL_DOWN_RIGHT -> DIAGONAL_UP_RIGHT
+            DIAGONAL_UP_RIGHT -> DIAGONAL_UP_LEFT
+            else -> NONE
+        }
+    }
+
+    fun opposite(): Direction {
+        return when(this) {
+            UP -> DOWN
+            DOWN -> UP
+            LEFT -> RIGHT
+            RIGHT -> LEFT
+            DIAGONAL_UP_LEFT -> DIAGONAL_DOWN_RIGHT
+            DIAGONAL_DOWN_RIGHT -> DIAGONAL_UP_LEFT
+            DIAGONAL_UP_RIGHT -> DIAGONAL_DOWN_LEFT
+            DIAGONAL_DOWN_LEFT -> DIAGONAL_UP_RIGHT
+            else -> NONE
+        }
+    }
 }
 
 val DIRECTION_VECTORS = mapOf(
