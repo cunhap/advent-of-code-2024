@@ -16,13 +16,14 @@ private fun createMap(
     input: List<String>,
 ): Pair<List<List<Char>>, Coordinate?> {
     var startingPosition: Coordinate? = null
-    val map = input.mapIndexed { indexRow, row ->
-        row.mapIndexed { indexColumn, columnChar ->
-            val coordinate = Coordinate(indexRow, indexColumn)
-            if (columnChar == '^') {
+    val map = generateMap(input) {
+        char, coordinate ->
+        when(char) {
+            'S' -> {
                 startingPosition = coordinate
                 '.'
-            } else columnChar
+            }
+            else -> char
         }
     }
     return Pair(map, startingPosition)
