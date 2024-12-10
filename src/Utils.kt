@@ -29,6 +29,10 @@ fun Any?.println() = println(this)
 data class Coordinate(val row: Int, val column: Int) {
     operator fun plus(other: Coordinate) = Coordinate(row + other.row, column + other.column)
     operator fun minus(other: Coordinate) = Coordinate(row - other.row, column - other.column)
+    fun move(direction: Direction): Coordinate {
+        val vector = DIRECTION_VECTORS[direction] ?: throw IllegalArgumentException("Invalid direction: $direction")
+        return this + vector
+    }
 }
 
 enum class Direction {
@@ -197,10 +201,10 @@ fun <T> Collection<T>.combinations(r: Int): Set<Set<T>> {
     return combinationsWithoutElement + combinationsWithElement
 }
 
-fun generateMap(
+fun <T> generateMap(
     input: List<String>,
-    processingFunction: (Char, Coordinate) -> Char
-): List<List<Char>>{
+    processingFunction: (Char, Coordinate) -> T
+): List<List<T>>{
     val map = input.mapIndexed { indexRow, row ->
         row.mapIndexed { indexColumn, columnChar ->
             val coordinate = Coordinate(indexRow, indexColumn)
@@ -208,4 +212,30 @@ fun generateMap(
         }
     }
     return map
+}
+
+data class Node(
+    val coordinate: Coordinate,
+    val value: Int,
+    val children: MutableList<Node>
+)
+
+class TreeNode(private val root: Node) {
+    fun allPathsToLeaf(leafCondition: (Node) -> Boolean): List<List<Coordinate>> {
+        val paths = mutableListOf<List<Coordinate>>()
+        val currentPath = mutableListOf<Coordinate>()
+
+        fun dfs(node: Node) {
+            currentPath.add(node.coordinate)
+            if (leafCondition(node)) {
+                paths.add(currentPath.toList())
+            } else {
+                node.children.forEach { dfs(it) }
+            }
+            currentPath.removeAt(currentPath.size - 1)
+        }
+
+        dfs(root)
+        return paths
+    }
 }
